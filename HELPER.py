@@ -56,3 +56,46 @@ class Predictions:
         self.master_list = 144 * [100.]  # list of values, corresponding to 24h period in timesteps of 10 min
         self.influences = []  # list of lists of influences
 
+
+
+
+def init_scenario(SCENARIO):
+
+    if SCENARIO == 2:
+    # enter data for 5 time steps
+        nutritions = [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 31, 0, 13, 4],
+            [0, 0, 0, 0, 0]
+        ]
+        exercises = [(180, 140, 9),
+                     (180, 140, 9),
+                     (180, 140, 9),
+                     (70, 95, 5),
+                     (70, 95, 5),
+                     (70, 95, 5)
+                     ]
+
+    elif SCENARIO == 1:
+        nutritions = [
+            [12.2, 12.8, 10, 0, 1.1],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ]
+        exercises = [(0, 70, 1),
+                     (0, 70, 1),
+                     (0, 70, 1),
+                     (0, 70, 1),
+                     (0, 70, 1),
+                     (0, 70, 1),
+                     ]
+    else:
+        print('Error. Invalid scenario chosen!')
+
+    return nutritions, exercises

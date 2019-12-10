@@ -7,7 +7,7 @@ class Task:
     control structure, only this class calls method in the main() function
     '''
 
-    def __init__(self, monitor, assess, diagnose, base, predictions):
+    def __init__(self, monitor, assess, diagnose, base, predictions, demo):
         '''
         init class values, receives 4 objects of class Monitor, Assess, Diagnose and Base
         '''
@@ -16,6 +16,8 @@ class Task:
         self.diagnose = diagnose
         self.base = base
         self.predictions = predictions
+        self.demo = demo
+
 
     def monitor_control(self, current_BGC, nutrition, exercise, insulin):
         '''
@@ -29,7 +31,7 @@ class Task:
         out: float diffscore, float future BGC
         '''
 
-        print(f'Starting monitoring sequence with current blood glucose concentration {np.round(current_BGC,2)}.')
+        print(f'\n\nStarting monitoring sequence with current blood glucose concentration {np.round(current_BGC,2)}.')
         observation = self.monitor.receive(current_BGC, nutrition, exercise, insulin)
         parameters = self.monitor.select(observation)
         predicted = self.monitor.predict(parameters, self.base, self.predictions)
@@ -74,12 +76,15 @@ class Task:
         print(f'future blood glucose concentration {np.round(predicted,2)}, and intervention = {decision}')
 
         hypotheses = self.diagnose.cover(decision, self.base)
-        print('hypotheses', hypotheses)
+
+        if not self.demo:
+            print('hypotheses', hypotheses)
+
         results = {}
         while hypotheses:
             hypothesis, hypotheses = self.diagnose.select(hypotheses)
             observable = self.diagnose.specify(hypothesis, self.base)
-            finding = self.diagnose.obtain(observable, current_BGC, nutrition, exercise, insulin)
+            finding = self.diagnose.obtain(observable, nutrition, exercise, insulin)
             result = self.diagnose.verify(finding, hypothesis, self.base)
             results[hypothesis] = result
 

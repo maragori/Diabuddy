@@ -1,6 +1,6 @@
 # STRUCTURE: INFERENCE METHODS
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 # initialize data formats and values for demo
 # all observations are stored 4-tuples with indices:
@@ -30,9 +30,8 @@ class Monitor:
     inference layer class mainly responsible for predicting future BGC and comparing to norm
     '''
 
-    def __init__(self):
-        '''
-        '''
+    def __init__(self, demo):
+        self.demo = demo
 
     def receive(self, current_BGC, nutrition, exercise, insulin):
         '''
@@ -42,12 +41,14 @@ class Monitor:
         out: parsed data
         '''
 
-        print('Receive datapoints...', end='')
+        if not self.demo:
+            print('Receive datapoints...', end='')
 
         # return all datapoints in 4 observation tuple
         observation = (current_BGC, nutrition, exercise, insulin)
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
 
         return observation
 
@@ -58,13 +59,16 @@ class Monitor:
         in: parsed data from receive step
         out: selected params for predict step
         '''
-        print('Select relevant parameters...', end='')
+
+        if not self.demo:
+            print('Select relevant parameters...', end='')
 
         # this will depend on the prediction model we use
         # probably use all parameters
         parameters = observation
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
         return parameters
 
     def predict(self, parameters, base, predictions):
@@ -147,16 +151,20 @@ class Monitor:
             ins_infl = base.insulin_rule(insulin)
             predictions.influences.append(ins_infl)
 
-            # collapse everything into master list
+
+        # collapse everything into master list
         for influence in predictions.influences:
+
             influence_array = np.array(influence)
             influence_array.resize(array_pred.shape)
             array_pred = array_pred + influence_array
 
         predictions.master_list = list(array_pred)
 
+        self.plot_predictions(predictions, 36)
         # select predicted BGC + 60 mins
         predicted = predictions.master_list[6]
+
 
         # discard all influences of the current timestep
         predictions.influences = []
@@ -167,7 +175,6 @@ class Monitor:
         print(np.round(array_pred[:9],2))
         return predicted
 
-
     def compare(self, predicted, base):
         '''
         compare predicted BGC to norm
@@ -175,6 +182,7 @@ class Monitor:
         in: predicted BGC, base
         out: diffscore
         '''
+
 
         print(f'Comparing predicted to optimal...', end='')
 
@@ -185,15 +193,39 @@ class Monitor:
         print(f'Diffscore: {np.round(diffscore,2)}')
         return diffscore
 
+    def plot_predictions(self, predictions, timesteps):
+        """
+        given a predictions object, plots current BGC predictions incl all influences on BGC at that timestep
+
+        in: predictions object
+        out: None
+        """
+        plt.style.use('ggplot')
+
+        x = np.linspace(0,timesteps, timesteps)
+
+        fig, (ax1, ax2) = plt.subplots(2,1,sharex=True)
+
+
+        ax1.plot(x, np.array(predictions.master_list)[:timesteps], label='predicted glucose')
+
+        for idx, influence in enumerate(predictions.influences):
+            ax2.plot(x, np.array(influence)[:timesteps], label=f'influence_{idx+1}')
+
+
+        ax1.legend()
+        if predictions.influences:
+            ax2.legend()
+        ax2.set_xlabel('Timesteps (each timestep is 10 minutes)')
+        plt.show()
 
 class Assess:
     '''
     inference layer class used to evaluate whether BGC will behave abnormally
     '''
 
-    def __init__(self):
-        '''
-        '''
+    def __init__(self, demo):
+        self.demo = demo
 
     def specify(self, diffscore, base):
         '''
@@ -203,13 +235,16 @@ class Assess:
         out: list of norms
         '''
 
-        print(f'Specifying the norms..., ', end='')
+        if not self.demo:
+            print(f'Specifying the norms..., ', end='')
 
         upper_limit = base.UPPER
         lower_limit = base.LOWER
         norms = [lower_limit, upper_limit]
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
+
         return diffscore, norms
 
     def select(self, diffscore, norms, base):
@@ -223,7 +258,8 @@ class Assess:
         # if predicted is higher than optimal, select upper norm
         # else select lower norm
 
-        print('Selecting relevant norm for the case...', end='')
+        if not self.demo:
+            print('Selecting relevant norm for the case...', end='')
 
         if diffscore >= 0:
             norm = norms[1]
@@ -232,7 +268,8 @@ class Assess:
             norm = norms[0]
             normtype = 'lower'
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
         print(f'Selected {normtype} norm {norm}')
 
         return norm, normtype
@@ -245,7 +282,8 @@ class Assess:
         out: norm value
         '''
 
-        print(f'Evaluating diffscore against {normtype} norm...', end='')
+        if not self.demo:
+            print(f'Evaluating diffscore against {normtype} norm...', end='')
 
         # if norm_val positive: value outside norm
         if normtype == 'upper':
@@ -255,7 +293,8 @@ class Assess:
         else:
             print('Invalid normtype specified.')
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
         return norm_val, normtype
 
     def match(self, norm_val, normtype):
@@ -266,11 +305,13 @@ class Assess:
         out: decision
         '''
 
-        print('Matching norm value to decision category...', end='')
+        if not self.demo:
+            print('Matching norm value to decision category...', end='')
 
         decision = (True, normtype) if norm_val > 0 else (False, normtype)
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
 
         if decision[0] and normtype == 'upper':
             print(f'An intervention should be sent because blood glucose will be too high')
@@ -289,9 +330,8 @@ class Diagnose:
     inference layer class responsible for diagnosing why behavior will be abnormal in the future
     '''
 
-    def __init__(self):
-        '''
-        '''
+    def __init__(self, demo):
+        self.demo = demo
 
     def cover(self, decision, base):
         '''
@@ -302,17 +342,20 @@ class Diagnose:
         '''
 
         if decision[0]:
-            print('Generating set of possible hypotheses...', end='')
+            if not self.demo:
+                print('Generating set of possible hypotheses...', end='')
 
             if decision[1] == 'upper':
 
                 hypotheses = base.too_high()
-                print(' Done')
+                if not self.demo:
+                    print(' Done')
                 return hypotheses
 
             elif decision[1] == 'lower':
                 hypotheses = base.too_low()
-                print(' Done')
+                if not self.demo:
+                    print(' Done')
                 return hypotheses
 
             else:
@@ -344,11 +387,13 @@ class Diagnose:
         out: observable to be checked
         '''
 
-        print(f'Specifying the observables for hypothesis {hypothesis}...', end='')
+        if not self.demo:
+            print(f'Specifying the observables for hypothesis {hypothesis}...', end='')
 
         observable = base.causal_model(hypothesis)
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
         return observable
 
     def obtain(self, observable, nutrition, exercise, insulin):
@@ -359,18 +404,22 @@ class Diagnose:
         out: finding
         '''
 
-        print(f'Obtaining observable {observable}...', end='')
+        if not self.demo:
+            print(f'Obtaining observable {observable}...', end='')
 
         if observable == 'nutrition':
-            print(' Done')
+            if not self.demo:
+                print(' Done')
             return nutrition
 
         elif observable == 'insulin':
-            print(' Done')
+            if not self.demo:
+                print(' Done')
             return insulin
 
         elif observable == 'exercise':
-            print(' Done')
+            if not self.demo:
+                print(' Done')
             return exercise
 
         else:
@@ -384,11 +433,13 @@ class Diagnose:
         out: result
         '''
 
-        print(f'Verifying hypothesis {hypothesis}...', end='')
+        if not self.demo:
+            print(f'Verifying hypothesis {hypothesis}...', end='')
 
         result = base.check_hypothesis(hypothesis, finding)
 
-        print(' Done')
+        if not self.demo:
+            print(' Done')
         return result
 
 

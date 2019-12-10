@@ -52,11 +52,12 @@ class Base:
     SCARB_DURATION = 24
     INS_DURATION = 18
 
-    def __init__(self):
+    def __init__(self, demo):
+        self.demo = demo
 
-        '''
-        all of the following rule types assume an ADDITIVE model
-        '''
+    '''
+    all of the following rule types assume an ADDITIVE model
+    '''
 
 
 
@@ -209,7 +210,7 @@ class Base:
         out: decrease in BGC
         '''
 
-        mod_infl = [-20]
+        mod_infl = [-5,-10,-15,-20]
 
         # fill up to length 144
         val = mod_infl[-1]
@@ -225,7 +226,7 @@ class Base:
         out: decrase in BGC
         '''
 
-        int_infl = [50]
+        int_infl = [5,10,15,20,25]
         # fill up to length 144
         val = int_infl[-1]
         fill_list = [val] * (144 - len(int_infl))
@@ -286,8 +287,8 @@ class Base:
         out: gram sugar that should be consumed
         '''
 
-        # given that sugar duration is 60 minutes, select diffscore at that momnet
-        target = predictions.master_list[6]
+        # sugar duration is 60 minutes, but insulin takes longer effects, find some middle ground that works well
+        target = predictions.master_list[10]
 
         # calculate diffscore
         diff = self.OPTIMAL_BGC - target
