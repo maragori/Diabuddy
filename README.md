@@ -61,8 +61,7 @@ Demo options:
 
 -c set starting blood glucose concentration (int)
 
-#### More Information
-The full report is [here.](https://github.com/maragori/Diabuddy/blob/master/Report/DiaBuddy%20-%20Full%20Report.pdf)
+
 
 
 
