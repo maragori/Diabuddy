@@ -2,4 +2,4 @@
 ## Developing a knowledge-based system for T1 Diabetes disease management
 
 
-test
+Type 1 Diabetes Mellitus (T1DM) is a chronic metabolic disorder, characterized by abnormal blood glucose regulation patterns, with which only 5-10\% of all diabetes cases are being accounted for. The defining component in T1DM is the immune system related destruction of pancreatic $\beta$-cells, responsible for the secretion of insulin. Type 1 diabetes requires lifelong treatment consisting of blood glucose monitoring, exogenous insulin administration, meal planning as well as suffering from disease management related complications and comorbid conditions. Poor glycaemic control is one of the greatest risk factors of diabetes related complications and has been a focal point of an ongoing bulk of research on the disease. Recent advances in continuous glucose monitoring (CGM) have enabled real-time CGM, which aims at improving patient self-care. This technology however still remains limited because of the delays between detection of glucose levels in interstitial fluid compared to venous levels (5-10 min) as well as the delayed onset of action of rapid insulin (10-30 min). \\
