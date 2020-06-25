@@ -1,3 +1,9 @@
+## TL;DR
+
+Knowledge-based system for blood glucose control in T1 Diabetes. Clone and run demo.py for interactive demo.
+
+
+
 ## DiaBuddy - Developing a knowledge-based system for T1 Diabetes disease management
 
 ### T1DM
