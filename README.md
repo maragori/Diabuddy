@@ -18,11 +18,14 @@ To maintain the structure of the knowledge system as developed using the CommonK
 #### Predicting future blood glucose concentrations
 A major challenge of the system was the implementation structure of the blood glucose prediction. The mathematical functions that describe the impact of certain factors on blood glucose levels can only be described on a conceptual level as the factual values of those functions depend on too many factors that cannot be assessed, e.g. individual patient factors (sleep quality, mood, hormones), time of the day, temperature and many more. Expecting patients or even trained medical specialist to quantify those functions exactly would be absurd. In order to nevertheless extract the valuable expert knowledge we decided upon a strategy that approximates those functions in a way that allows us to directly relate the parameters of those functions to intuitive expert knowledge.
 
-![Alt text](images/increaseBGC.png?raw=true "Title")
+![Alt text](images/increaseBGC.png?raw=true "Title") ![Alt text](images/cumulativeincreaseBGC.png?raw=true "Title")
 
 After the first interview with our experts we knew that the increase in blood glucose levels should approximately follow the function as shown in left in the figure above. In order to bring it conceptually closer to the absolute change in blood glucose levels we compute the cumulative increase as shown in the right figure. Albeit more intuitive to understand, it still did not allow to extract meaningful parameters from the function. This however could be achieved, using a simple piece wise linear function approximation of that function, as shown below. On a conceptual level, this function can be described using three parameters: the delay of the onset of the effect, the total increase at the end of the effect and the duration of the effect. All three of those parameters describe the function in terms that can easily be described by diabetes experts. 
 
-![Alt text](images/approx.png?raw=true "Title")
+<p align="center">
+  <img src="https://github.com/maragori/Diabuddy/blob/master/images/approx.png" alt=""/>
+</p>
+
 
 Using those linear functions, we were able to describe all rule types for factors that increase or decrease the blood glucose levels. In order to account for the delaying effects of other factors, i.e. uptake of protein or fat, we just needed to alter the given effect function such that the first part of the linear function (effect=0) was prolonged. This approximation system thus allowed us to describe and combine all factors that influence blood glucose level in a simple and intuitive way. The linear approximation also enabled for a straightforward implementation of the general prediction model given a set of influence factors in each iteration of the monitoring loop. In order for this approximation to work we also had to assume that the case of multiple factors influencing blood glucose could be described using an additive model without any interaction between those factors. Given this assumption we could simply add all influences and the current prediction of the blood glucose timeline, rendering us with an aggregated piecewise linear function describing both the blood glucose prediction function and all factors influencing blood glucose.
 
