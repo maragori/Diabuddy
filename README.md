@@ -30,11 +30,30 @@ After the first interview with our experts we knew that the increase in blood gl
 Using those linear functions, we were able to describe all rule types for factors that increase or decrease the blood glucose levels. In order to account for the delaying effects of other factors, i.e. uptake of protein or fat, we just needed to alter the given effect function such that the first part of the linear function (effect=0) was prolonged. This approximation system thus allowed us to describe and combine all factors that influence blood glucose level in a simple and intuitive way. The linear approximation also enabled for a straightforward implementation of the general prediction model given a set of influence factors in each iteration of the monitoring loop. In order for this approximation to work we also had to assume that the case of multiple factors influencing blood glucose could be described using an additive model without any interaction between those factors. Given this assumption we could simply add all influences and the current prediction of the blood glucose timeline, rendering us with an aggregated piecewise linear function describing both the blood glucose prediction function and all factors influencing blood glucose.
 
 
+<p align="center">
+  <img src="https://github.com/maragori/Diabuddy/blob/master/images/multiple_influences.png" alt=""/>
+</p>
 
 
+#### Code implementation
+Given the additive model approximation, the implementation into software was straightforward. Both predicted blood glucose curves and cumulative influences were segmented into 10 minute timesteps and stored in arrays. This thus does not yet realize the intended event-driven monitoring system, but rather a time based iteration approach that each timestep aggregates data from the past iteration period. Simplifying the monitoring frequency however allowed to construct more intuitive and easy to follow example scenarios and should not limit the generalization of this prototypical system to a more complex setting. Each iteration of the monitoring loop the output blood glucose array from last iteration would be passed to the system, new influence arrays were created according to the knowledge model and aggregated into the blood glucose array. After each iteration all influence arrays were discarded and only the resulting blood glucose array was passed on further down the pipeline. 
+
+## DEMO
+To run the demo, clone the repo and run demo.py from console. Requires only numpy, matplotlib and argparse.
+Two scenarios are available:
+
+#### Scenario 1
+Type 1 diabetes patient Anna eats a medium-sized banana for breakfast and drinks black coffee. This meal contains 89 calories. The nutritional values are composed of 1.1g protein, 12.8g fast carbohydrates, 10g complex carbohydrates, and 12.2g sugar. After entering the nutritional data into the system, it advises her to inject 3 units of fast insulin, which she does after 10 minutes.
+
+#### Scenario 2
+After work. type 1 diabetes patient Peter decides to perform an intensive, 30-minute running workout followed by another 30 minutes of moderate walking. After the high intensity workout, he injects 2 units of fast insulin to counteract the effects of the workout. In order to strengthen himself, he eats a chocolate bar after 40 minutes, during his moderate exercise unit. The same contains 250 calories, 13g fat, 31g (fast) carbs and 4g of proteins.
 
 
+Demo options:
 
+-s choose scenario 1 or 2 (int)
+
+-c set starting blood glucose concentration (int)
 
 
 
