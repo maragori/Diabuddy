@@ -2,13 +2,11 @@
 
 # DEMO
 import numpy as np
+import argparse
 from BASE import Base
 from HELPER import Predictions, init_scenario
 from INFERENCE import Monitor, Assess, Diagnose
 from TASK_METHOD import Task
-
-# this bool is only to be set to 'True' for demo purposes: the system DOES NOT PRINT FULL TRACES when this is set as true
-DEMO = True
 
 # initialize data formats and values for demo
 
@@ -30,16 +28,33 @@ STEP = 0
 HR = 1
 MET = 2
 
+parser = argparse.ArgumentParser(
+    description='Demo script for DiaBuddy'
+)
+
+parser.add_argument('-s', '--scenario', type=int, help="Choice of scenario. 1/2 are valid choices.", default=1)
+parser.add_argument('-c', '--currentbgc', type=int, help="Starting BGC", default=100)
+parser.add_argument('-d', '--demo', type=bool, help="Demo flag. If false, whole trace is printed.", default=True)
+
+args = parser.parse_args()
+
+# this bool is only to be set to 'True' for demo purposes: the system DOES NOT PRINT FULL TRACES when this is set as true
+DEMO = args.demo
 
 # CONFIGURATIONS FOR SCENARIOS: choose 1 or 2
-SCENARIO = 2
+SCENARIO = args.scenario
 
 
 # initialize scenario configuration
 nutritions, exercises = init_scenario(SCENARIO)
 
 # starting blood glucose
-current_BGC = 100
+current_BGC = args.currentbgc
+
+
+print(f"Running scenario {SCENARIO}")
+print(f"Starting blood glucose is set to {current_BGC}")
+print(f"Running in {'demo' if DEMO else 'debug'} mode")
 
 # starting insulin injection, each timestep with intervention new insulin can be inputted
 i = 0
